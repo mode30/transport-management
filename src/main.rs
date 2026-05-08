@@ -1,11 +1,22 @@
+// use core::num;
 use std::{
     collections::HashMap,
     io::{self, Write},
 };
 
+struct Ticket {
+    number_of_ticket: u8,
+}
+#[allow(dead_code)]
 enum Transport {
     Car,
-    Train,
+    Train {
+        owner: String,
+        ticket: Ticket,
+        car_model: String,
+        year: u32,
+        price: f64,
+    },
     Airplane,
 }
 #[allow(dead_code)]
@@ -24,52 +35,15 @@ struct Car {
     price: f64,
 }
 fn main() {
-    loop {
-        let mut _state = LoginState::LoggedOut();
-        match &mut _state {
-            LoginState::LoggedOut() => {
-                println!("thank you for using our service:");
-                let mut user_entry = String::new();
-                std::io::stdin()
-                    .read_line(&mut user_entry)
-                    .expect("cannot enter user entry");
-                let user_entry = user_entry.trim();
-                if user_entry == "login" {
-                    _state = LoginState::EnterName {
-                        name: String::new(),
-                    }
-                } else if user_entry == "quit" {
-                }
-            }
-            LoginState::EnterName { name } => {
-                if name.is_empty() {
-                    print!("please enter name\n");
-                    let result = std::io::stdout().flush();
-                    match result {
-                        Ok(name) => println!("welcome,{:?}", name),
-                        Err(_) => println!("cannot collect user name and name is empty"),
-                    }
-                } else {
-                    println!("welcome,{}", name);
-                    _state = LoginState::LoggedIn { user: name.clone() }
-                }
-            }
-            LoginState::LoggedIn { user } => {
-                print!("enter command:>");
-                std::io::stdout().flush().expect("cannot handle user input");
-                let user_input = String::new();
-                let user_input = user_input.trim();
-                match user_input {
-                    "whoami" => println!("helloo user,{}", user),
-
-                    "logoout" => _state = LoginState::LoggedOut(),
-                    "quit" => break,
-                    _ => println!("wrong entry"),
-                };
-                // _state = LoginState::LoggedOut();
-            } // _ => println!("invalid entry"),
-        }
-    }
+    let _transportation = Transport::Train {
+        owner: "benjamin".to_owned(),
+        ticket: Ticket {
+            number_of_ticket: 4,
+        },
+        car_model: "merceded".to_owned(),
+        year: 2012,
+        price: 99.9,
+    };
     let mut _car_collection: Vec<Car> = Vec::new();
     // let mut borrower = Vec::new();
     // let table_borrow: HashMap<Car::owner, Car::car_model> = HashMap::new();
@@ -140,32 +114,118 @@ impl Car {
     fn selling_price(&self) -> f64 {
         self.price * Car::fixed_monthly_insurance()
     }
-
-    // fn disply_borrower_list()
-
-    // fn new(owner: String, year: u32, fuel_level: f64, price: f64) -> Result<Self, String> {
-    //     if owner.is_empty() {
-    //         return Err("cannot be empty".to_owned());
-    //         // return io::Error::new(io::ErrorKind::InvalidInput, "nan");
-    //     }
-    //     Ok(Self {
-    //         owner,
-    //         year,
-    //         fuel_level,
-    //         price,
-    //     })
-    // }
 }
 
 impl Transport {
     #[allow(dead_code)]
+    // #[allow(unused_variables)]
     fn allowance(&self, miles: f64) {
+        let mut i = 0;
         let allowance = match &self {
             Transport::Car => println!("miles:{}", miles * 2.0),
 
-            Transport::Train => println!("miles:{}", miles * 2.0),
+            Transport::Train {
+                owner,
+                ticket,
+                car_model,
+                year,
+                price,
+            } => {
+                println!("enter name:");
+                println!("owner:{}", owner);
+                while i < ticket.number_of_ticket {
+                    let customer_names = String::new();
+                }
+                // let mut owner=String::new();
+                // std::io::stdin().read_line(&mut owner).expect("cannot collect user name");
+                println!("miles:{}", miles * 20.0)
+            }
+            // Transport::Train => println!("miles:{}", miles * 2.0),
             Transport::Airplane => println!("miles:{}", miles * 2.0),
         };
         allowance
     }
+}
+
+#[allow(dead_code)]
+fn login_parameter() -> Result<LoginState, io::Error> {
+    loop {
+        let mut _state = LoginState::LoggedOut();
+        match &mut _state {
+            LoginState::LoggedOut() => {
+                println!("thank you for using our service:");
+                let mut user_entry = String::new();
+                std::io::stdin().read_line(&mut user_entry)?;
+                // .expect("cannot enter user entry");
+                let user_entry = user_entry.trim();
+                if user_entry == "login" {
+                    _state = LoginState::EnterName {
+                        name: String::new(),
+                    }
+                } else if user_entry == "quit" {
+                }
+            }
+            LoginState::EnterName { name } => {
+                if name.is_empty() {
+                    print!("please enter name\n");
+                    let result = std::io::stdout().flush();
+                    match result {
+                        Ok(name) => println!("welcome,{:?}", name),
+                        Err(_) => println!("cannot collect user name and name is empty"),
+                    }
+                } else {
+                    println!("welcome,{}", name);
+                    _state = LoginState::LoggedIn { user: name.clone() }
+                }
+            }
+            LoginState::LoggedIn { user } => {
+                print!("enter command:>");
+                std::io::stdout().flush()?;
+                let user_input = String::new();
+                let user_input = user_input.trim();
+                match user_input {
+                    "whoami" => println!("helloo user,{}", user),
+
+                    "logoout" => _state = LoginState::LoggedOut(),
+                    // "quit" => break,
+                    _ => println!("wrong entry"),
+                };
+                // _state = LoginState::LoggedOut();
+            } // _ => println!("invalid entry"),
+        }
+    }
+}
+
+#[allow(dead_code)]
+fn user_query(prompt: &str) -> Result<String, io::Error> {
+    println!("enter name to buy ticket::{}", prompt);
+    let mut user_input = String::new();
+    std::io::stdin().read_line(&mut user_input)?;
+
+    if user_input.trim().is_empty() {
+        return Err(io::Error::new(io::ErrorKind::InvalidInput, "nan"))?;
+    }
+    Ok(user_input.to_owned())
+}
+
+#[allow(dead_code)]
+fn atoi(prompt: &str) -> Result<i32, io::Error> {
+    println!("{}", prompt);
+    let user_query = user_query("enter nums:")?;
+    let num_conv = user_query
+        .trim()
+        .parse()
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "nan"))?;
+    Ok(num_conv)
+}
+
+#[allow(dead_code)]
+fn atof64(prompt: &str) -> Result<f64, io::Error> {
+    println!("{}", prompt);
+    let user_query = user_query("enter nums:")?;
+    let num_conv = user_query
+        .trim()
+        .parse()
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "nan"))?;
+    Ok(num_conv)
 }
