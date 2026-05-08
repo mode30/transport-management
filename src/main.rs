@@ -156,3 +156,16 @@ impl Car {
     //     })
     // }
 }
+
+impl Transport {
+    #[allow(dead_code)]
+    fn allowance(&self, miles: f64) {
+        let allowance = match &self {
+            Transport::Car => println!("miles:{}", miles * 2.0),
+
+            Transport::Train => println!("miles:{}", miles * 2.0),
+            Transport::Airplane => println!("miles:{}", miles * 2.0),
+        };
+        allowance
+    }
+}
